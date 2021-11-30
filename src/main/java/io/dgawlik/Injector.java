@@ -94,7 +94,7 @@ public class Injector {
          * @throws IllegalStateException    something went wrong during injection
          * @throws RuntimeException         everything other
          */
-        public T assemble() {
+        public synchronized T assemble() {
             var emptyCtors = ReflectionUtils
                     .getConstructors(root, ctor -> ctor.getParameterCount() == 0);
             var injectCtors = ReflectionUtils
@@ -231,7 +231,7 @@ public class Injector {
     }
 
 
-    public static <T> Work<T> forClass(Class<T> cls) {
+    public static synchronized  <T> Work<T> forClass(Class<T> cls) {
         return new Work<>(cls);
     }
 }

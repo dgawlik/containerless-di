@@ -6,7 +6,11 @@
 
     <groupId>io.dgawlik</groupId>
     <artifactId>containerless-di</artifactId>
-    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <version>1.0.1</version>
+    <modules>
+        <module>examples</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
