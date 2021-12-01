@@ -37,11 +37,10 @@ public class App {
         }
 
         public void subscribeTicks(Flux<Object> flux) {
-            flux.subscribeOn(Schedulers.single(), false)
-                    .subscribe(i -> {
-                        System.out.println("Container received tick " + i + ", refreshing");
-                        refresh();
-                    });
+            flux.subscribe(i -> {
+                System.out.println("Container received tick " + i + ", refreshing");
+                refresh();
+            });
 
         }
 
@@ -66,16 +65,17 @@ public class App {
         SingletonContainer cont = SingletonContainer.forClasses(A.class);
 
         Flux<Object> stream = Flux.generate(() -> 0, (state, sink) -> {
-            sink.next(state);
-            return state + 1;
-        }).delayElements(Duration.ofSeconds(1));
+                    sink.next(state);
+                    return state + 1;
+                }).delayElements(Duration.ofSeconds(1))
+                .subscribeOn(Schedulers.single())
+                .publishOn(Schedulers.single());
 
         cont.subscribeTicks(stream);
 
-        stream.subscribeOn(Schedulers.single())
-                .subscribe(i -> {
-                    System.out.println(cont.getBean(A.class));
-                });
+        stream.subscribe(i -> {
+            System.out.println(cont.getBean(A.class));
+        });
 
         System.in.read();
     }

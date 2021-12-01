@@ -11,24 +11,20 @@ import io.dgawlik.examples.threadlocal.toscan.Composite;
  *
  */
 public class App {
-    private static class CustomThread extends Thread {
 
-        ThreadLocal<Cache> cache;
+    public static void main(String[] args) {
 
+        var context = ThreadLocal.withInitial(Cache::new);
 
-        @Override
-        public void run() {
-            cache = new ThreadLocal<>();
-            cache.set(new Cache());
-
+        Runnable runnable = () -> {
             for (int i = 0; i < 3; i++) {
 
-                Cache temp = cache.get();
+                Cache temp = context.get();
                 Composite comp = Injector.forClass(Composite.class)
                         .scanning("io.dgawlik.examples.threadlocal.toscan")
                         .cache(temp)
                         .assemble();
-                cache.set(temp);
+                context.set(temp);
 
                 System.out.printf("%s %s\n", comp.a, comp.b);
 
@@ -38,11 +34,9 @@ public class App {
                     e.printStackTrace();
                 }
             }
-        }
-    }
+        };
 
-    public static void main(String[] args) {
-        new CustomThread().start();
-        new CustomThread().start();
+        new Thread(runnable).start();
+        new Thread(runnable).start();
     }
 }
